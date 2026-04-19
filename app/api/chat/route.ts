@@ -11,22 +11,24 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, history = [] } = await request.json();
+    const { message, history = [], model = "grok-4" } = await request.json();
     
     const messages: ChatCompletionMessageParam[] = [
-      { role: "system", content: "You are Grok Magic, a helpful, witty, and engaging AI companion." }
+      { role: "system", content: "You are Grok Magic, a helpful, witty, and engaging AI companion inspired by the Hitchhiker's Guide and JARVIS." }
     ];
 
+    // Reconstruct conversation history (filtering out undefined fields)
     for (const item of history) {
-      if (item.user) messages.push({ role: "user", content: item.user });
-      if (item.ai) messages.push({ role: "assistant", content: item.ai });
+      if (item && item.user) messages.push({ role: "user", content: item.user });
+      if (item && item.ai) messages.push({ role: "assistant", content: item.ai });
     }
     messages.push({ role: "user", content: message });
 
     const completion = await openai.chat.completions.create({
-      model: "grok-4",
+      model: model,
       messages: messages,
       temperature: 0.7,
+      max_tokens: 4096,
     });
 
     const reply = completion.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";

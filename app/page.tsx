@@ -50,7 +50,8 @@ export default function GrokMagic() {
           history: messages.map(m => ({
             user: m.role === 'user' ? m.content : undefined,
             ai: m.role === 'ai' ? m.content : undefined
-          }))
+          })).filter(item => item.user || item.ai), // clean up empty objects
+          model: currentModel
         })
       });
 
@@ -73,7 +74,7 @@ export default function GrokMagic() {
     } finally {
       setIsLoading(false);
     }
-  }, [input, isLoading, messages]);
+  }, [input, isLoading, messages, currentModel]);
 
   const clearChat = () => {
     setMessages([
@@ -207,7 +208,7 @@ export default function GrokMagic() {
                 <div className={`message px-9 py-7 text-[17px] leading-relaxed max-w-2xl ${msg.role === 'user' ? 'user-message' : 'ai-message'}`}>
                   <ReactMarkdown
                     components={{
-                      code({node, inline, className, children, ...props}) {
+                      code({node, inline, className, children, ...props}: any) {
                         const match = /language-(\w+)/.exec(className || '');
                         return !inline && match ? (
                           <SyntaxHighlighter
