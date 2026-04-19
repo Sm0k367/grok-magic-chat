@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { NextRequest } from 'next/server';
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 const openai = new OpenAI({
   apiKey: process.env.XAI_API_KEY,
@@ -11,8 +12,8 @@ export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
   try {
     const { message, history = [] } = await request.json();
-
-    const messages = [
+    
+    const messages: ChatCompletionMessageParam[] = [
       { role: "system", content: "You are Grok Magic, a helpful, witty, and engaging AI companion." }
     ];
 
@@ -29,9 +30,9 @@ export async function POST(request: NextRequest) {
     });
 
     const reply = completion.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
-
+    
     const newHistory = [...history, { user: message, ai: reply }];
-
+    
     return Response.json({ reply, history: newHistory });
   } catch (error) {
     console.error(error);
