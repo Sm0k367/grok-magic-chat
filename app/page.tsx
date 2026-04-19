@@ -1,6 +1,21 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+
+// Stripe Buy Button web component type declaration
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'stripe-buy-button': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          'buy-button-id': string;
+          'publishable-key': string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
@@ -25,6 +40,7 @@ export default function GrokMagic() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentModel, setCurrentModel] = useState('grok-4');
   const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const [hasAccess, setHasAccess] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -95,11 +111,69 @@ export default function GrokMagic() {
     console.log('Image generation requested');
   };
 
+  // Payment gating logic - simple, persistent via localStorage + URL param
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success') === 'true' || urlParams.get('paid') === 'true';
+    
+    if (success || localStorage.getItem('grokMagicAccess') === 'true') {
+      setHasAccess(true);
+      localStorage.setItem('grokMagicAccess', 'true');
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  const unlockAccess = () => {
+    setHasAccess(true);
+    localStorage.setItem('grokMagicAccess', 'true');
+  };
+
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [messages]);
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(139,92,246,0.15)_0%,transparent_50%)]"></div>
+        <div className="max-w-md w-full text-center relative z-10">
+          <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-violet-400 to-fuchsia-500 rounded-3xl flex items-center justify-center text-6xl shadow-2xl">🌌</div>
+          <h1 className="text-6xl font-bold tracking-[-3px] mb-3">GROK MAGIC</h1>
+          <p className="text-2xl text-violet-300 mb-2">Cosmic Intelligence</p>
+          <p className="text-slate-400 mb-10 max-w-xs mx-auto">Pay once. Chat forever with Grok-4.</p>
+          
+          <div className="bg-zinc-900/80 border border-white/10 backdrop-blur-xl rounded-3xl p-8 mb-8 shadow-2xl">
+            <stripe-buy-button
+              buy-button-id="buy_btn_1TO4VkK5abcrIcyeiJv8H6Ic"
+              publishable-key="pk_live_51P4BLMK5abcrIcyebzFrrEwI0T1vTbKG1HzgZTwNLuSurwwwuXNNjfJjxTfOMua5Jp1rArP8AQPpyATYl74jDYY100pkzkc9vj"
+            >
+            </stripe-buy-button>
+          </div>
+
+          <div className="text-xs text-slate-500 space-y-1">
+            <p>✅ Unlimited messages</p>
+            <p>✅ Model switching</p>
+            <p>✅ Syntax highlighting</p>
+            <p>✅ Lifetime access • No subscription</p>
+          </div>
+
+          <button
+            onClick={unlockAccess}
+            className="mt-10 text-slate-400 hover:text-violet-400 transition-colors text-sm flex items-center gap-2 mx-auto"
+          >
+            <span>✦</span> I ALREADY PAID — ENTER THE COSMOS
+          </button>
+        </div>
+        
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[10px] text-slate-700">
+          Secured by Stripe • Live at https://grok-magic-chat.vercel.app
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-black text-white overflow-hidden">

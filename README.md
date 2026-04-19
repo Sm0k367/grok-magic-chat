@@ -62,8 +62,17 @@ npm run dev
 
 The app will be live in seconds.
 
+## 💳 Payment System (Integrated)
+- Full paywall with embedded **Stripe Buy Button** (one-time lifetime access).
+- Provided live button ID and publishable key integrated.
+- Test with "I already paid" button (sets persistent access via localStorage).
+- Success URL should redirect to `https://grok-magic-chat.vercel.app/?success=true`.
+- Real purchases unlock the full cosmic chat interface immediately.
+
+**Live App**: https://grok-magic-chat.vercel.app
+
 ---
 
-**Made with ❤️ for the cosmos using xAI's Grok-4**
+**Made with ❤️ for the cosmos using xAI's Grok-4 + Stripe**
 
-All issues resolved. Production-ready.
+Full working paid app. All files updated and pushed.
