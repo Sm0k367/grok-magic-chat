@@ -1,34 +1,37 @@
-export const runtime = 'edge';
-
+import OpenAI from 'openai';
 import { NextRequest } from 'next/server';
-import { Client } from 'xai-sdk';
-import { user, system, assistant } from 'xai-sdk/chat';
 
-const client = new Client();
+const openai = new OpenAI({
+  apiKey: process.env.XAI_API_KEY,
+  baseURL: 'https://api.x.ai/v1',
+});
 
-const SYSTEM_PROMPT = "You are Grok Magic, a helpful, witty, and engaging AI companion.";
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
     const { message, history = [] } = await request.json();
-    
-    const messages = [system(SYSTEM_PROMPT)];
-    
+
+    const messages = [
+      { role: "system", content: "You are Grok Magic, a helpful, witty, and engaging AI companion." }
+    ];
+
     for (const item of history) {
-      messages.push(user(item.user || ""));
-      if (item.ai) messages.push(assistant(item.ai));
+      if (item.user) messages.push({ role: "user", content: item.user });
+      if (item.ai) messages.push({ role: "assistant", content: item.ai });
     }
-    messages.push(user(message));
-    
-    const response = await client.chat.create({
+    messages.push({ role: "user", content: message });
+
+    const completion = await openai.chat.completions.create({
       model: "grok-4",
-      messages: messages
-    }).sample();
-    
-    const reply = response.text || response.message?.content || "Sorry, I couldn't generate a response.";
-    
+      messages: messages,
+      temperature: 0.7,
+    });
+
+    const reply = completion.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
+
     const newHistory = [...history, { user: message, ai: reply }];
-    
+
     return Response.json({ reply, history: newHistory });
   } catch (error) {
     console.error(error);
