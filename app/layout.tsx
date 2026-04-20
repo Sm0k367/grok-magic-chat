@@ -3,15 +3,10 @@ import "./globals.css";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Grok Magic • The Grok-4 interface that finally matches",
-  description: "Private. Beautiful. Streaming intelligence with voice that works. One payment for lifetime access to the UI that doesn't suck.",
+  title: "grok magic - the one i actually use every day",
+  description: "i got tired of ugly grok interfaces so i built this one. streaming, voice that works, cosmic background because i like it. $29 one time if you want it too.",
   icons: {
     icon: "/favicon.ico",
-  },
-  openGraph: {
-    title: "Grok Magic • The Grok-4 interface that finally matches",
-    description: "Private. Beautiful. Streaming intelligence with voice that works.",
-    images: [{ url: "https://grok-magic-chat.vercel.app/og.png" }],
   },
 };
 

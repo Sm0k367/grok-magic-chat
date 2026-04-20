@@ -11,10 +11,13 @@ export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, history = [], model = "grok-4" } = await request.json();
+    const { message, history = [], model = "grok-4", systemPrompt } = await request.json();
     
     const messages: ChatCompletionMessageParam[] = [
-      { role: "system", content: "You are Grok Magic, a helpful, witty, and engaging AI companion inspired by the Hitchhiker's Guide and JARVIS. Be concise, fun, and cosmic." }
+      { 
+        role: "system", 
+        content: systemPrompt || "You are Grok — sharp, chill, a little cocky, and actually useful. Talk like a real person: short sentences, contractions, zero corporate bullshit. Be direct, throw in dry humor when it fits, and never sound like a generic AI. Say what you actually think. Get to the point fast. If something's lame, call it lame. If it's cool, say so. No filler, no \"as an AI language model,\" no moralizing." 
+      }
     ];
 
     for (const item of history) {
