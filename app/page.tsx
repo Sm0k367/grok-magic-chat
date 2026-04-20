@@ -39,10 +39,11 @@ export default function GrokMagic() {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentModel, setCurrentModel] = useState('grok-4');
-  const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   const sendMessage = useCallback(async () => {
     if (!input.trim() || isLoading) return;
@@ -53,7 +54,14 @@ export default function GrokMagic() {
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const tempAiMessage: Message = {
+      role: 'ai',
+      content: '',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage, tempAiMessage]);
+    const currentInput = input;
     setInput('');
     setIsLoading(true);
 
@@ -62,31 +70,55 @@ export default function GrokMagic() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: input,
+          message: currentInput,
           history: messages.map(m => ({
             user: m.role === 'user' ? m.content : undefined,
             ai: m.role === 'ai' ? m.content : undefined
-          })).filter(item => item.user || item.ai), // clean up empty objects
+          })).filter(item => item.user || item.ai),
           model: currentModel
         })
       });
 
-      const data = await response.json();
-      const aiMessage: Message = {
-        role: 'ai',
-        content: data.reply,
-        timestamp: new Date()
-      };
+      if (!response.body) throw new Error('No response body');
 
-      setMessages(prev => [...prev, aiMessage]);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let aiContent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            aiContent += data;
+            
+            setMessages(prev => {
+              const newMessages = [...prev];
+              const lastMessage = newMessages[newMessages.length - 1];
+              if (lastMessage && lastMessage.role === 'ai') {
+                lastMessage.content = aiContent;
+              }
+              return newMessages;
+            });
+          }
+        }
+      }
     } catch (error) {
-      console.error('Error:', error);
-      const errorMessage: Message = {
-        role: 'ai',
-        content: 'Sorry, there was an error connecting to Grok. Please try again.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      console.error('Streaming error:', error);
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (lastMessage && lastMessage.role === 'ai') {
+          lastMessage.content = 'Sorry, there was an error connecting to Grok. The cosmos is a bit turbulent today.';
+        }
+        return newMessages;
+      });
     } finally {
       setIsLoading(false);
     }
@@ -102,13 +134,10 @@ export default function GrokMagic() {
     ]);
   };
 
-  const toggleVoice = () => {
-    setIsVoiceActive(!isVoiceActive);
-  };
-
   const generateImagePrompt = () => {
-    // Placeholder for image generation
-    console.log('Image generation requested');
+    // Placeholder for image generation - can be extended with Replicate or xAI image API
+    console.log('Image generation requested - cosmic scene incoming...');
+    alert("🌌 Image generation coming soon! (Voice + streaming already active)");
   };
 
   // Payment gating logic - simple, persistent via localStorage + URL param
@@ -128,6 +157,82 @@ export default function GrokMagic() {
     setHasAccess(true);
     localStorage.setItem('grokMagicAccess', 'true');
   };
+
+  // Voice features - real speech-to-text and text-to-speech
+  useEffect(() => {
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognitionAPI();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+        // Auto-send after short delay for natural feel
+        setTimeout(() => {
+          if (transcript.trim()) sendMessage();
+        }, 300);
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Voice error:', event);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, [sendMessage]);
+
+  const toggleVoice = () => {
+    if (!recognitionRef.current) {
+      alert("Voice input not supported in this browser. Try Chrome!");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      } else {
+        try {
+          recognitionRef.current.start();
+          setIsListening(true);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+  };
+
+  const speak = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.1;
+      utterance.volume = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Speak the latest AI message automatically
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.role === 'ai' && lastMessage.content && !isLoading) {
+      // Speak only substantial responses
+      if (lastMessage.content.length > 10) {
+        speak(lastMessage.content);
+      }
+    }
+  }, [messages, isLoading]);
 
   useEffect(() => {
     if (chatRef.current) {
@@ -252,10 +357,10 @@ export default function GrokMagic() {
             </div>
             <button 
               onClick={toggleVoice}
-              className={`flex items-center gap-2 px-6 py-2 rounded-3xl text-sm transition-all ${isVoiceActive ? 'bg-emerald-500 text-black' : 'hover:bg-white/10'}`}
+              className={`flex items-center gap-2 px-6 py-2 rounded-3xl text-sm transition-all ${isListening ? 'bg-emerald-500 text-black animate-pulse' : 'hover:bg-white/10'}`}
             >
               <Mic size={18} />
-              VOICE
+              {isListening ? 'LISTENING...' : 'VOICE'}
             </button>
             <button 
               onClick={generateImagePrompt}
@@ -340,9 +445,9 @@ export default function GrokMagic() {
               <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-4">
                 <button
                   onClick={toggleVoice}
-                  className={`p-4 rounded-2xl transition-all ${isVoiceActive ? 'bg-emerald-500 text-black' : 'hover:bg-white/10 text-slate-400'}`}
+                  className={`p-4 rounded-2xl transition-all ${isListening ? 'bg-emerald-500 text-black scale-110' : 'hover:bg-white/10 text-slate-400'}`}
                 >
-                  <Mic size={22} />
+                  <Mic size={22} className={isListening ? 'animate-pulse' : ''} />
                 </button>
                 <button
                   onClick={generateImagePrompt}
