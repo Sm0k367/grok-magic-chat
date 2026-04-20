@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "grok magic - the one i actually use every day",
-  description: "i got tired of ugly grok interfaces so i built this one. streaming, voice that works, cosmic background because i like it. $29 one time if you want it too.",
+  title: "Epic Tech AI • Aether",
+  description: "The ultimate cosmic interface to Aether — Epic Tech AI's flagship visionary intelligence. Real-time streaming, voice interaction, and groundbreaking insights. Built for those shaping the future of technology.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -17,13 +16,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-black">
         {children}
-        <Script
-          async
-          src="https://js.stripe.com/v3/buy-button.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

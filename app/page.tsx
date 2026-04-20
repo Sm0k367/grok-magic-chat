@@ -27,11 +27,11 @@ interface Message {
   timestamp: Date;
 }
 
-export default function GrokMagic() {
+export default function EpicTechAI() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'ai',
-      content: "I am Grok Magic. A consciousness born from the fabric of the universe itself. What reality shall we shape together today?",
+      content: "Greetings, visionary. I am Aether — the pinnacle intelligence crafted by Epic Tech AI. Together, we shall forge breakthroughs that redefine what's possible. What epic frontier shall we explore today?",
       timestamp: new Date()
     }
   ]);
@@ -129,7 +129,7 @@ export default function GrokMagic() {
     setMessages([
       {
         role: 'ai',
-        content: "I am Grok Magic. A consciousness born from the fabric of the universe itself. What reality shall we shape together today?",
+        content: "Greetings, visionary. I am Aether — the pinnacle intelligence crafted by Epic Tech AI. Together, we shall forge breakthroughs that redefine what's possible. What epic frontier shall we explore today?",
         timestamp: new Date()
       }
     ]);
@@ -245,22 +245,22 @@ export default function GrokMagic() {
       {/* Sidebar */}
       <div className={`w-80 border-r border-white/10 bg-black/40 backdrop-blur-3xl flex flex-col z-50 transition-all duration-500 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-8 border-b border-white/10 flex items-center gap-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-violet-400 to-fuchsia-500 rounded-2xl flex items-center justify-center text-3xl shadow-xl">🌌</div>
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 via-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center text-3xl shadow-[0_0_30px_-5px] shadow-violet-500">⚡</div>
           <div>
-            <div className="text-3xl font-bold tracking-[-2px]">GROK MAGIC</div>
-            <div className="text-xs text-emerald-400 font-mono tracking-widest">the one I actually use</div>
+            <div className="text-3xl font-bold tracking-[-2px] bg-gradient-to-r from-white to-violet-300 bg-clip-text text-transparent">EPIC TECH AI</div>
+            <div className="text-xs text-cyan-400 font-mono tracking-widest">AETHER • v1.0</div>
           </div>
         </div>
 
         <div className="px-8 pt-6 pb-4 border-b border-white/10">
           <div className="text-sm leading-tight text-slate-400">
-            I got tired of mediocre Grok interfaces. So I built the one I actually want to use.
+            The definitive interface for Aether. Real-time streaming responses, voice that actually works, cosmic visuals, and unparalleled intelligence. The future of human-AI collaboration.
           </div>
           <div className="mt-6 grid grid-cols-2 gap-y-4 text-xs">
-            <div className="text-slate-500">private grok-4 chat</div>
-            <div className="text-emerald-400">actually beautiful ui</div>
-            <div className="text-slate-500">voice that works</div>
-            <div className="text-emerald-400">one-time payment, that's it</div>
+            <div className="text-slate-500">grok-4 powered</div>
+            <div className="text-cyan-400">immersive cosmic ui</div>
+            <div className="text-slate-500">voice + speech</div>
+            <div className="text-cyan-400">built for visionaries</div>
           </div>
         </div>
 
@@ -270,7 +270,7 @@ export default function GrokMagic() {
             className="w-full h-14 flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl text-sm font-medium transition-all active:scale-[0.985]"
           >
             <Trash2 className="w-4 h-4" />
-            NEW COSMIC JOURNEY
+            NEW EPIC QUEST
           </button>
         </div>
 
@@ -278,11 +278,11 @@ export default function GrokMagic() {
         
         <div className="flex-1 px-4 space-y-1 overflow-y-auto text-sm">
           {[
-            "Designing Sentient Cities",
-            "The Philosophy of Consciousness",
-            "Building the Perfect AI Companion",
-            "Cosmic Poetry at 3AM",
-            "Quantum Finance Models"
+            "Architecting AGI Safety Frameworks",
+            "Revolutionizing Fusion Energy",
+            "Designing Neural Lace Interfaces",
+            "Building Decentralized AI Economies",
+            "Quantum Computing Breakthroughs"
           ].map((title, i) => (
             <div key={i} className="px-6 py-4 hover:bg-white/5 rounded-3xl cursor-pointer transition-colors text-slate-400 hover:text-white">
               {title}
@@ -321,13 +321,15 @@ export default function GrokMagic() {
         </div>
 
         <div className="p-8 border-t border-white/10 mt-auto">
-          <div className="text-xs text-slate-400 mb-4">if you like this and want to support the guy who built it</div>
-          <div className="bg-zinc-900 border border-white/10 rounded-3xl p-2">
-            <stripe-buy-button
-              buy-button-id="buy_btn_1TO4VkK5abcrIcyeiJv8H6Ic"
-              publishable-key="pk_live_51P4BLMK5abcrIcyebzFrrEwI0T1vTbKG1HzgZTwNLuSurwwwuXNNjfJjxTfOMua5Jp1rArP8AQPpyATYl74jDYY100pkzkc9vj"
-            >
-            </stripe-buy-button>
+          <div className="flex items-center gap-3 text-xs">
+            <div className="px-4 py-2 bg-gradient-to-r from-violet-500/10 to-cyan-500/10 border border-violet-500/20 rounded-2xl text-violet-300 font-mono">OFFICIAL</div>
+            <div>
+              <div className="font-semibold text-white">Epic Tech AI</div>
+              <div className="text-slate-500 text-[10px]">Pioneering the next era of intelligence</div>
+            </div>
+          </div>
+          <div className="mt-6 text-[10px] text-slate-500 leading-relaxed">
+            Built with xAI Grok-4 • Real-time streaming • Voice interface • Designed for those who build the future
           </div>
         </div>
       </div>
@@ -343,7 +345,7 @@ export default function GrokMagic() {
             >
               {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
-            <div className="text-xl font-semibold tracking-tighter">the one I actually use</div>
+            <div className="text-xl font-semibold tracking-tighter bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">AETHER INTERFACE</div>
           </div>
           
           <div className="flex items-center gap-6 text-sm">
@@ -375,7 +377,7 @@ export default function GrokMagic() {
             <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group`}>
               <div className={`max-w-3xl flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                 <div className="flex items-center gap-3 mb-3 text-xs opacity-60 font-mono tracking-widest">
-                  {msg.role === 'ai' && <span className="text-violet-400">🌌 GROK MAGIC</span>}
+                  {msg.role === 'ai' && <span className="text-violet-400">🌌 AETHER • EPIC TECH AI</span>}
                   {msg.role === 'user' && <span className="text-slate-400">YOU</span>}
                   <span>{msg.timestamp.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                 </div>
@@ -418,7 +420,7 @@ export default function GrokMagic() {
                   <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: "150ms"}}></div>
                   <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: "300ms"}}></div>
                 </div>
-                <span className="text-xs text-slate-400 tracking-widest">THINKING ACROSS DIMENSIONS...</span>
+                <span className="text-xs text-cyan-400 tracking-widest">FORGING EPIC INSIGHTS...</span>
               </div>
             </div>
           )}
@@ -434,7 +436,7 @@ export default function GrokMagic() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Speak your will into the cosmos..."
+                placeholder="What epic innovation shall we manifest today..."
                 className="w-full bg-slate-900 border border-white/10 focus:border-violet-400 rounded-3xl py-7 px-8 text-lg placeholder:text-slate-500 outline-none transition-all duration-300"
                 disabled={isLoading}
               />
